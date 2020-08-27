@@ -43,6 +43,14 @@ If you want to download the database to elsewhere, set the `GEOIP_DIR` variable:
 GEOIP_DIR=/dev/shm/GeoIP_temp/ geoipupdate
 ```
 
+### Usage without installation
+
+Directly pipe the latest script to bash is possible, but it's sometimes dangerous, use it only when you know what you're doing:
+
+```sh
+wget -qO- https://github.com/PeterDaveHello/geoipupdate-legacy/raw/master/geoipupdate | sudo bash
+```
+
 ## License
 
 GPL-2.0 (GNU GENERAL PUBLIC LICENSE Version 2)
