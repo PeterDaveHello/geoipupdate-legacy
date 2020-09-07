@@ -43,6 +43,10 @@
         echo
     }
 
+    cleanup() {
+        rmdir "${TEMP_DIR}"
+    }
+
     LAST_UPDATED="$($download_cmd "${SOURCE_HOMEPAGE}" | grep -A2 'Last Updated' | sed -E -e 's/<\/?[^/]+>//g' | awk -F':' '/Maxmind/ {print $2}')"
 
     echo "Last updated: ${LAST_UPDATED}"
@@ -58,6 +62,8 @@
         download "country" "$IP_VER" "GeoIP${SUFFIX}.dat"
         download "asn" "$IP_VER" "GeoIPASNum${SUFFIX}.dat"
     done
+
+    cleanup
 
     echo "Done!"
 }
