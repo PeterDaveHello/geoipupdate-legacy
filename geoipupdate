@@ -1,61 +1,63 @@
 #!/bin/bash
 
-set -e
+{
+    set -e
 
-TEMP_DIR="$(mktemp -d)"
-GEOIP_DIR="${GEOIP_DIR:-/usr/share/GeoIP}"
-DL_SOURCE="https://dl.miyuru.lk/geoip/maxmind"
-SOURCE_HOMEPAGE="https://www.miyuru.lk/geoiplegacy"
+    TEMP_DIR="$(mktemp -d)"
+    GEOIP_DIR="${GEOIP_DIR:-/usr/share/GeoIP}"
+    DL_SOURCE="https://dl.miyuru.lk/geoip/maxmind"
+    SOURCE_HOMEPAGE="https://www.miyuru.lk/geoiplegacy"
 
-mkdir -p "$GEOIP_DIR"
+    mkdir -p "$GEOIP_DIR"
 
-echo "Download Maxmind GeoIP(legacy) database from ${SOURCE_HOMEPAGE} ..."
-echo "\$GEOIP_DIR is set to: ${GEOIP_DIR}"
-echo
-
-if [ ! -w "$GEOIP_DIR" ]; then
-    echo >&2 "${GEOIP_DIR} is not writable!!! Check your permission!!!"
-    exit 1
-fi
-
-if command -v wget > /dev/null 2>&1; then
-    download_cmd='wget -qO-'
-elif command -v curl > /dev/null 2>&1; then
-    download_cmd='curl -LSso-'
-else
-    echo >&2 "Both \`wget\` and \`curl\` not found!!! Need one of them to download the database!!!"
-    exit 1
-fi
-
-download() {
-    local TYPE IP_VER FILENAME TEMP_FILE TARGET_FILE
-    TYPE="$1"
-    IP_VER="$2"
-    FILENAME="$3"
-    TEMP_FILE="${TEMP_DIR}/${FILENAME}"
-    TARGET_FILE="${GEOIP_DIR}/${FILENAME}"
-
-    echo "Downloading ${TYPE} IPv${IP_VER} database ..."
-    $download_cmd "${DL_SOURCE}/${TYPE}/maxmind${IP_VER}.dat.gz" | gunzip > "${TEMP_FILE}"
-    mv "${TEMP_FILE}" "$TARGET_FILE"
-    ls -alh "$TARGET_FILE"
+    echo "Download Maxmind GeoIP(legacy) database from ${SOURCE_HOMEPAGE} ..."
+    echo "\$GEOIP_DIR is set to: ${GEOIP_DIR}"
     echo
-}
 
-LAST_UPDATED="$($download_cmd "${SOURCE_HOMEPAGE}" | grep -A2 'Last Updated' | sed -E -e 's/<\/?[^/]+>//g' | awk -F':' '/Maxmind/ {print $2}')"
-
-echo "Last updated: ${LAST_UPDATED}"
-
-for IP_VER in 4 6; do
-    if [ "4" = "$IP_VER" ]; then
-        SUFFIX=""
-    else
-        SUFFIX="v6"
+    if [ ! -w "$GEOIP_DIR" ]; then
+        echo >&2 "${GEOIP_DIR} is not writable!!! Check your permission!!!"
+        exit 1
     fi
 
-    download "city" "$IP_VER" "GeoIPCity${SUFFIX}.dat"
-    download "country" "$IP_VER" "GeoIP${SUFFIX}.dat"
-    download "asn" "$IP_VER" "GeoIPASNum${SUFFIX}.dat"
-done
+    if command -v wget > /dev/null 2>&1; then
+        download_cmd='wget -qO-'
+    elif command -v curl > /dev/null 2>&1; then
+        download_cmd='curl -LSso-'
+    else
+        echo >&2 "Both \`wget\` and \`curl\` not found!!! Need one of them to download the database!!!"
+        exit 1
+    fi
 
-echo "Done!"
+    download() {
+        local TYPE IP_VER FILENAME TEMP_FILE TARGET_FILE
+        TYPE="$1"
+        IP_VER="$2"
+        FILENAME="$3"
+        TEMP_FILE="${TEMP_DIR}/${FILENAME}"
+        TARGET_FILE="${GEOIP_DIR}/${FILENAME}"
+
+        echo "Downloading ${TYPE} IPv${IP_VER} database ..."
+        $download_cmd "${DL_SOURCE}/${TYPE}/maxmind${IP_VER}.dat.gz" | gunzip > "${TEMP_FILE}"
+        mv "${TEMP_FILE}" "$TARGET_FILE"
+        ls -alh "$TARGET_FILE"
+        echo
+    }
+
+    LAST_UPDATED="$($download_cmd "${SOURCE_HOMEPAGE}" | grep -A2 'Last Updated' | sed -E -e 's/<\/?[^/]+>//g' | awk -F':' '/Maxmind/ {print $2}')"
+
+    echo "Last updated: ${LAST_UPDATED}"
+
+    for IP_VER in 4 6; do
+        if [ "4" = "$IP_VER" ]; then
+            SUFFIX=""
+        else
+            SUFFIX="v6"
+        fi
+
+        download "city" "$IP_VER" "GeoIPCity${SUFFIX}.dat"
+        download "country" "$IP_VER" "GeoIP${SUFFIX}.dat"
+        download "asn" "$IP_VER" "GeoIPASNum${SUFFIX}.dat"
+    done
+
+    echo "Done!"
+}
