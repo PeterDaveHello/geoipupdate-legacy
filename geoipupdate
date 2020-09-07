@@ -46,7 +46,6 @@ LAST_UPDATED="$($download_cmd "${SOURCE_HOMEPAGE}" | grep -A2 'Last Updated' | s
 
 echo "Last updated: ${LAST_UPDATED}"
 
-
 for IP_VER in 4 6; do
     if [ "4" = "$IP_VER" ]; then
         SUFFIX=""
