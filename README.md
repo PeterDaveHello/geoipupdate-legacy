@@ -4,6 +4,13 @@
 
 By default, it'll download the database to `/usr/share/GeoIP`, you can change the path by variable `$GEOIP_DIR`.
 
+## Table of Contents
+
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Usage without installation](#usage-without-installation)
+- [License](#license)
+
 ## Installation
 
 Download `geoipupdate` script to your `$PATH`, like `/usr/bin/` or `/usr/local/bin/`, and set the script to be executable, for example:
