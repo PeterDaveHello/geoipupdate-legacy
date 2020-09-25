@@ -8,7 +8,7 @@ By default, it'll download the database to `/usr/share/GeoIP`, you can change th
 
 - [Installation](#installation)
 - [Usage](#usage)
-  - [Usage without installation](#usage-without-installation)
+  - [Use without installation](#use-without-installation)
 - [License](#license)
 
 ## Installation
@@ -50,7 +50,7 @@ If you want to download the database to elsewhere, set the `GEOIP_DIR` variable:
 GEOIP_DIR=/dev/shm/GeoIP_temp/ geoipupdate
 ```
 
-### Usage without installation
+### Use without installation
 
 Directly pipe the latest script to bash is possible, but it's sometimes dangerous, use it only when you know what you're doing:
 
