@@ -23,8 +23,10 @@
         download_cmd='wget -qO-'
     elif command -v curl > /dev/null 2>&1; then
         download_cmd='curl -LSso-'
+    elif command -v fetch > /dev/null 2>&1 && [ "FreeBSD" = "$(uname)" ]; then
+        download_cmd='fetch -qo -'
     else
-        echo >&2 "Both \`wget\` and \`curl\` not found!!! Need one of them to download the database!!!"
+        echo >&2 "Both \`wget\` and \`curl\` or FreeBSD\'s \`fetch\` not found!!! Need one of them to download the database!!!"
         exit 1
     fi
 
