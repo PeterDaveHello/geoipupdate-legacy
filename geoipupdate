@@ -49,9 +49,9 @@
         rmdir "${TEMP_DIR}"
     }
 
-    LAST_UPDATED="$($download_cmd "${SOURCE_HOMEPAGE}" | grep -A2 'Last Updated' | sed -E -e 's/<\/?[^/]+>//g' | awk -F':' '/Maxmind/ {print $2}')"
+    UPDATE_DATE="$($download_cmd "${SOURCE_HOMEPAGE}" | grep -A2 'Last Updated' | sed -E -e 's/<\/?[^/]+>//g' | awk -F':' '/Maxmind/ {print $2}')"
 
-    echo "Last updated: ${LAST_UPDATED}"
+    echo "Update date: ${UPDATE_DATE}"
 
     for IP_VER in 4 6; do
         if [ "4" = "$IP_VER" ]; then
