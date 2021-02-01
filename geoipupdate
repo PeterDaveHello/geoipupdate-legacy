@@ -5,11 +5,44 @@
 
     TEMP_DIR="$(mktemp -d)"
     GEOIP_DIR="${GEOIP_DIR:-/usr/share/GeoIP}"
-    DL_SOURCE="https://dl.miyuru.lk/geoip/maxmind"
-    SOURCE_HOMEPAGE="https://www.miyuru.lk/geoiplegacy"
+
+    DEFAULT_SOURCE="miyuru"
+
+    DL_SOURCE_MIYURU="https://dl.miyuru.lk/geoip/maxmind"
+    SOURCE_HOMEPAGE_MIYURU="https://www.miyuru.lk/geoiplegacy"
+
+    if [ "" = "$GEOIP_SOURCE" ]; then
+        GEOIP_SOURCE="$DEFAULT_SOURCE"
+    fi
+
+    echo "\$GEOIP_SOURCE is set to: ${GEOIP_SOURCE}"
+
+    if [ "$GEOIP_SOURCE" = "$DEFAULT_SOURCE" ]; then
+        echo "This is the default source to download GeoIP(legacy) database."
+        echo
+    fi
+
+    case "$GEOIP_SOURCE" in
+        "miyuru")
+            DL_SOURCE="$DL_SOURCE_MIYURU"
+            SOURCE_HOMEPAGE="$SOURCE_HOMEPAGE_MIYURU"
+            echo "Please note that this source may not be available via IPv4,"
+            echo "should you have any connectivity issue, please try to switch"
+            echo "to another download source."
+            ;;
+        *)
+            echo >&2 "GeoIP(legacy) source \"${GEOIP_SOURCE}\" not recognized!!!"
+            echo >&2
+            echo >&2 "Recognizable source: miyuru($SOURCE_HOMEPAGE_MIYURU)"
+            echo >&2
+            echo >&2 "Report here if you think it's an issue: https://github.com/PeterDaveHello/geoipupdate-legacy/issues"
+            exit 1
+            ;;
+    esac
 
     mkdir -p "$GEOIP_DIR"
 
+    echo
     echo "Download Maxmind GeoIP(legacy) database from ${SOURCE_HOMEPAGE} ..."
     echo "\$GEOIP_DIR is set to: ${GEOIP_DIR}"
     echo
@@ -30,16 +63,28 @@
         exit 1
     fi
 
+    geoip_download_url() {
+        local TYPE IP_VER FILENAME
+        TYPE="$1"
+        IP_VER="$2"
+        FILENAME="$3"
+        case "$GEOIP_SOURCE" in
+            "miyuru")
+                echo "${DL_SOURCE}/${TYPE}/maxmind${IP_VER}.dat.gz"
+                ;;
+        esac
+    }
+
     download() {
         local TYPE IP_VER FILENAME TEMP_FILE TARGET_FILE
         TYPE="$1"
         IP_VER="$2"
         FILENAME="$3"
         TEMP_FILE="${TEMP_DIR}/${FILENAME}"
-        TARGET_FILE="${GEOIP_DIR}/${FILENAME}"
+        TARGET_FILE="${GEOIP_DIR}/${FILENAME}.dat"
 
         echo "Downloading ${TYPE} IPv${IP_VER} database ..."
-        $download_cmd "${DL_SOURCE}/${TYPE}/maxmind${IP_VER}.dat.gz" | gunzip > "${TEMP_FILE}"
+        $download_cmd "$(geoip_download_url "$TYPE" "$IP_VER" "$FILENAME")" | gunzip > "${TEMP_FILE}"
         mv "${TEMP_FILE}" "$TARGET_FILE"
         ls -alh "$TARGET_FILE"
         echo
@@ -49,9 +94,19 @@
         rmdir "${TEMP_DIR}"
     }
 
-    UPDATE_DATE="$($download_cmd "${SOURCE_HOMEPAGE}" | grep -A2 'Last Updated' | sed -E -e 's/<\/?[^/]+>//g' | awk -F':' '/Maxmind/ {print $2}')"
+    update_date() {
+        local TEMP_FILE
+        TEMP_FILE="$(mktemp -p "$TEMP_DIR")"
+        $download_cmd "${SOURCE_HOMEPAGE}" > "$TEMP_FILE"
+        case "$GEOIP_SOURCE" in
+            "miyuru")
+                grep -A2 'Last Updated' "$TEMP_FILE" | sed -E -e 's/<\/?[^/]+>//g' | awk -F':' '/Maxmind/ {print $2}'
+                ;;
+        esac
+        rm -f "$TEMP_FILE"
+    }
 
-    echo "Update date: ${UPDATE_DATE}"
+    echo "Update date: $(update_date)"
 
     for IP_VER in 4 6; do
         if [ "4" = "$IP_VER" ]; then
@@ -60,9 +115,9 @@
             SUFFIX="v6"
         fi
 
-        download "city" "$IP_VER" "GeoIPCity${SUFFIX}.dat"
-        download "country" "$IP_VER" "GeoIP${SUFFIX}.dat"
-        download "asn" "$IP_VER" "GeoIPASNum${SUFFIX}.dat"
+        download "city" "$IP_VER" "GeoIPCity${SUFFIX}"
+        download "country" "$IP_VER" "GeoIP${SUFFIX}"
+        download "asn" "$IP_VER" "GeoIPASNum${SUFFIX}"
     done
 
     cleanup
