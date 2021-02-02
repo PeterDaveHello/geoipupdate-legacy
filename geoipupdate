@@ -11,6 +11,9 @@
     DL_SOURCE_MIYURU="https://dl.miyuru.lk/geoip/maxmind"
     SOURCE_HOMEPAGE_MIYURU="https://www.miyuru.lk/geoiplegacy"
 
+    DL_SOURCE_MAILFUD="https://mailfud.org/geoip-legacy"
+    SOURCE_HOMEPAGE_MAILFUD="$DL_SOURCE_MAILFUD"
+
     if [ "" = "$GEOIP_SOURCE" ]; then
         GEOIP_SOURCE="$DEFAULT_SOURCE"
     fi
@@ -28,12 +31,18 @@
             SOURCE_HOMEPAGE="$SOURCE_HOMEPAGE_MIYURU"
             echo "Please note that this source may not be available via IPv4,"
             echo "should you have any connectivity issue, please try to switch"
-            echo "to another download source."
+            echo "to another download source. (e.g. mailfud)"
+            ;;
+        "mailfud")
+            DL_SOURCE="$DL_SOURCE_MAILFUD"
+            SOURCE_HOMEPAGE="$SOURCE_HOMEPAGE_MAILFUD"
+            echo "Please note that there is a strict rate limit on this site,"
+            echo "do not download the databases multiple times from a single IP in a short time."
             ;;
         *)
             echo >&2 "GeoIP(legacy) source \"${GEOIP_SOURCE}\" not recognized!!!"
             echo >&2
-            echo >&2 "Recognizable source: miyuru($SOURCE_HOMEPAGE_MIYURU)"
+            echo >&2 "Recognizable source: mailfud($DL_SOURCE_MAILFUD), miyuru($SOURCE_HOMEPAGE_MIYURU)"
             echo >&2
             echo >&2 "Report here if you think it's an issue: https://github.com/PeterDaveHello/geoipupdate-legacy/issues"
             exit 1
@@ -72,6 +81,9 @@
             "miyuru")
                 echo "${DL_SOURCE}/${TYPE}/maxmind${IP_VER}.dat.gz"
                 ;;
+            "mailfud")
+                echo "${DL_SOURCE}/${FILENAME}.dat.gz"
+                ;;
         esac
     }
 
@@ -101,6 +113,9 @@
         case "$GEOIP_SOURCE" in
             "miyuru")
                 grep -A2 'Last Updated' "$TEMP_FILE" | sed -E -e 's/<\/?[^/]+>//g' | awk -F':' '/Maxmind/ {print $2}'
+                ;;
+            "mailfud")
+                grep 'Latest update:' "$TEMP_FILE" | sed -E -e 's/<\/?[^/]+>//g'
                 ;;
         esac
         rm -f "$TEMP_FILE"
