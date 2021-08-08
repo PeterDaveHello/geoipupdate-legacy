@@ -75,9 +75,17 @@ Note: `sudo` needs `-E` or `--preserve-env=GEOIP_SOURCE` to preserve the variabl
 
 Directly pipe the latest script to bash is possible, but it's sometimes dangerous, use it only when you know what you're doing:
 
-```sh
-wget -qO- https://github.com/PeterDaveHello/geoipupdate-legacy/raw/master/geoipupdate | sudo bash
-```
+- Using wget with original URL
+
+  ```sh
+  wget -qO- https://github.com/PeterDaveHello/geoipupdate-legacy/raw/master/geoipupdate | sudo bash
+  ```
+
+- Using curl with shortened URL, specify update source to `mailfud`
+
+  ```sh
+  curl -sSLo- https://git.io/geoipupdate | GEOIP_SOURCE=mailfud sudo -E bash
+  ```
 
 ## License
 
