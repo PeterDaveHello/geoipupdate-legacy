@@ -62,7 +62,7 @@
     fi
 
     if command -v wget > /dev/null 2>&1; then
-        download_cmd='wget -qO-'
+        download_cmd='wget -nv -O-'
     elif command -v curl > /dev/null 2>&1; then
         download_cmd='curl -LSso-'
     elif command -v fetch > /dev/null 2>&1 && [ "FreeBSD" = "$(uname)" ]; then
