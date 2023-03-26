@@ -14,9 +14,7 @@
     DL_SOURCE_MAILFUD="https://mailfud.org/geoip-legacy"
     SOURCE_HOMEPAGE_MAILFUD="$DL_SOURCE_MAILFUD"
 
-    if [ "" = "$GEOIP_SOURCE" ]; then
-        GEOIP_SOURCE="$DEFAULT_SOURCE"
-    fi
+    GEOIP_SOURCE="${GEOIP_SOURCE:-$DEFAULT_SOURCE}"
 
     echo "\$GEOIP_SOURCE is set to: ${GEOIP_SOURCE}"
 
