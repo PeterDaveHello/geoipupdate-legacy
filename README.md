@@ -1,30 +1,30 @@
 # GeoIP-update
 
-**Unofficial** script to download MaxMind GeoIP(legacy) database from multiple supported sources.
+This is an **unofficial** script for downloading the MaxMind GeoIP (legacy) database from multiple supported sources.
 
-By default, it'll download the database from Miyuru's site to `/usr/share/GeoIP`, you can change the path and source by variable `$GEOIP_DIR` and `$GEOIP_SOURCE`, see the document below for more details.
+By default, the script downloads the database from Miyuru's site to `/usr/share/GeoIP`. You can change the path and source by setting the `$GEOIP_DIR` and `$GEOIP_SOURCE` variables. See the documentation below for more details.
 
 ## Table of Contents
 
-- [Data source](#data-source)
+- [Data Sources](#data-sources)
 - [Installation](#installation)
 - [Usage](#usage)
-  - [Use with specified data source](#use-with-specified-data-source)
+  - [Use with a specified data source](#use-with-a-specified-data-source)
   - [Use without installation](#use-without-installation)
 - [License](#license)
 
-## Data source
+## Data Sources
 
-`geoipupdate-legacy` uses two sources of the legacy GeoIP databses, they are both using [MaxMind](https://www.maxmind.com/)'s [GeoLite2 databases](https://dev.maxmind.com/geoip/geoip2/geolite2/) as the data source, and using project [sherpya/geolite2legacy](https://github.com/sherpya/geolite2legacy) to convert the data from **MaxMind DB File Format** to the legacy GeoIp format we need. You can visit their websites for more details:
+`geoipupdate-legacy` utilizes two sources for the legacy GeoIP databases. Both sources use [MaxMind](https://www.maxmind.com/)'s [GeoLite2 databases](https://dev.maxmind.com/geoip/geoip2/geolite2/) as their data source and rely on the [sherpya/geolite2legacy](https://github.com/sherpya/geolite2legacy) project to convert the data from the **MaxMind DB File Format** to the legacy GeoIP format. For more details, visit their websites:
 
-- Miyuru(<https://miyuru.lk/geoiplegacy>)
-- mailfud(<https://mailfud.org/geoip-legacy/>)
+- Miyuru (<https://miyuru.lk/geoiplegacy>)
+- Mailfud (<https://mailfud.org/geoip-legacy/>)
 
-Miyuru is currently the default data source, because mailfud seems to have more strict rate limit, but please be noted that Miyuru's service may not support IPv4 all the time, if you have any connectivity issue with it, see the usage document and switch to another data source.
+Miyuru is the default data source, as Mailfud appears to have a stricter rate limit. However, note that Miyuru's service may not support IPv4 all the time. If you encounter any connectivity issues with it, refer to the usage documentation and switch to another data source.
 
 ## Installation
 
-Download `geoipupdate` script to your `$PATH`, like `/usr/bin/` or `/usr/local/bin/`, and set the script to be executable, for example:
+Download the `geoipupdate` script to your `$PATH`, such as `/usr/bin/` or `/usr/local/bin/`, and set the script to be executable. For example:
 
 Using `curl`:
 
@@ -40,7 +40,7 @@ sudo wget -O /usr/local/bin/geoipupdate https://github.com/PeterDaveHello/geoipu
 sudo chmod +x /usr/local/bin/geoipupdate
 ```
 
-You can also use `git` to clone the whole repository, and use symbolic link in `$PATH`, so that you can simply update the script by `git pull` in the future:
+You can also use `git` to clone the whole repository, and create a symbolic link in your `$PATH`, allowing you to easily update the script using git pull in the future:
 
 ```sh
 git clone https://github.com/PeterDaveHello/geoipupdate-legacy
@@ -49,31 +49,31 @@ sudo ln -s $PWD/geoipupdate-legacy/geoipupdate /usr/local/bin/
 
 ## Usage
 
-As by default, `/usr/share/GeoIP` is usually owned by root, you could use `sudo` for the root permission:
+Since `/usr/share/GeoIP` is typically owned by root, you may need to use `sudo` for root permission:
 
 ```sh
 sudo geoipupdate
 ```
 
-If you want to download the database to elsewhere, set the `GEOIP_DIR` variable:
+To download the database to a different location, set the GEOIP_DIR variable:
 
 ```sh
 GEOIP_DIR=/dev/shm/GeoIP_temp/ geoipupdate
 ```
 
-### Use with specified data source
+### Use with a specified data source
 
-As we mention above in the [data source](#data-source) section, we support multiple data sources, you just need to specify the one you want to use, by setting `GEOIP_SOURCE` variable with the value of the source name, *in lower case*, for example:
+As mentioned in the [Data Sources](#data-sources) section, multiple data sources are supported. To specify the desired source, set the `$GEOIP_SOURCE`variable with the value of the source name, *in lower case*. For example:
 
 ```sh
 GEOIP_SOURCE=mailfud sudo -E geoipupdate
 ```
 
-Note: `sudo` needs `-E` or `--preserve-env=GEOIP_SOURCE` to preserve the variable for the commands it calls, otherwise `geoipupdate` won't be able to know which source you'd like to use.
+Note: `sudo` requires the `-E` or `--preserve-env=GEOIP_SOURCE` flag to preserve the variable for the commands it calls, otherwise `geoipupdate` won't know which source you'd like to use.
 
 ### Use without installation
 
-Directly pipe the latest script to bash is possible, but it's sometimes dangerous, use it only when you know what you're doing:
+It's possible to directly pipe the latest script to bash, but this can be risky. Use this method only when you understand the implications:
 
 - Using wget with original URL
 
@@ -81,7 +81,7 @@ Directly pipe the latest script to bash is possible, but it's sometimes dangerou
   wget -qO- https://github.com/PeterDaveHello/geoipupdate-legacy/raw/master/geoipupdate | sudo bash
   ```
 
-- Using curl with shortened URL, specify update source to `mailfud`
+- Using curl with shortened URL, specifying the update source as `mailfud`:
 
   ```sh
   curl -sSLo- https://git.io/geoipupdate | GEOIP_SOURCE=mailfud sudo -E bash
