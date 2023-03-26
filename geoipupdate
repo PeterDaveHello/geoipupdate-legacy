@@ -59,7 +59,7 @@
         *)
             echo.Red >&2 "GeoIP(legacy) source \"${GEOIP_SOURCE}\" not recognized!!!"
             echo.Red >&2
-            echo.Red >&2 "Recognizable source: mailfud($DL_SOURCE_MAILFUD), miyuru($SOURCE_HOMEPAGE_MIYURU)"
+            echo.Red >&2 "Recognizable source: \"mailfud\" ($DL_SOURCE_MAILFUD), \"miyuru\" ($SOURCE_HOMEPAGE_MIYURU)"
             echo.Red >&2
             echo.Yellow >&2 "Report here if you think it's an issue: https://github.com/PeterDaveHello/geoipupdate-legacy/issues"
             exit 1
