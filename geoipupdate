@@ -16,10 +16,29 @@
 
     GEOIP_SOURCE="${GEOIP_SOURCE:-$DEFAULT_SOURCE}"
 
-    echo "\$GEOIP_SOURCE is set to: ${GEOIP_SOURCE}"
+    # ColorEchoForShell
+    # https://github.com/PeterDaveHello/ColorEchoForShell
+
+    echo.Cyan() {
+        echo -e "\\033[36m$*\\033[m"
+    }
+
+    echo.Red() {
+        echo -e "\\033[31m$*\\033[m"
+    }
+
+    echo.Green() {
+        echo -e "\\033[32m$*\\033[m"
+    }
+
+    echo.Yellow() {
+        echo -e "\\033[33m$*\\033[m"
+    }
+
+    echo.Cyan "\$GEOIP_SOURCE is set to: ${GEOIP_SOURCE}"
 
     if [ "$GEOIP_SOURCE" = "$DEFAULT_SOURCE" ]; then
-        echo "This is the default source to download GeoIP(legacy) database."
+        echo.Cyan "This is the default source to download GeoIP(legacy) database."
         echo
     fi
 
@@ -27,22 +46,22 @@
         "miyuru")
             DL_SOURCE="$DL_SOURCE_MIYURU"
             SOURCE_HOMEPAGE="$SOURCE_HOMEPAGE_MIYURU"
-            echo "Please note that this source may not be available via IPv4,"
-            echo "should you have any connectivity issue, please try to switch"
-            echo "to another download source. (e.g. mailfud)"
+            echo.Yellow "Please note that this source may not be available via IPv4,"
+            echo.Yellow "should you have any connectivity issue, please try to switch"
+            echo.Yellow "to another download source. (e.g. mailfud)"
             ;;
         "mailfud")
             DL_SOURCE="$DL_SOURCE_MAILFUD"
             SOURCE_HOMEPAGE="$SOURCE_HOMEPAGE_MAILFUD"
-            echo "Please note that there is a strict rate limit on this site,"
-            echo "do not download the databases multiple times from a single IP in a short time."
+            echo.Yellow "Please note that there is a strict rate limit on this site,"
+            echo.Yellow "do not download the databases multiple times from a single IP in a short time."
             ;;
         *)
-            echo >&2 "GeoIP(legacy) source \"${GEOIP_SOURCE}\" not recognized!!!"
-            echo >&2
-            echo >&2 "Recognizable source: mailfud($DL_SOURCE_MAILFUD), miyuru($SOURCE_HOMEPAGE_MIYURU)"
-            echo >&2
-            echo >&2 "Report here if you think it's an issue: https://github.com/PeterDaveHello/geoipupdate-legacy/issues"
+            echo.Red >&2 "GeoIP(legacy) source \"${GEOIP_SOURCE}\" not recognized!!!"
+            echo.Red >&2
+            echo.Red >&2 "Recognizable source: mailfud($DL_SOURCE_MAILFUD), miyuru($SOURCE_HOMEPAGE_MIYURU)"
+            echo.Red >&2
+            echo.Yellow >&2 "Report here if you think it's an issue: https://github.com/PeterDaveHello/geoipupdate-legacy/issues"
             exit 1
             ;;
     esac
@@ -50,12 +69,12 @@
     mkdir -p "$GEOIP_DIR"
 
     echo
-    echo "Download Maxmind GeoIP(legacy) database from ${SOURCE_HOMEPAGE} ..."
-    echo "\$GEOIP_DIR is set to: ${GEOIP_DIR}"
+    echo.Cyan "Download Maxmind GeoIP(legacy) database from ${SOURCE_HOMEPAGE} ..."
+    echo.Cyan "\$GEOIP_DIR is set to: ${GEOIP_DIR}"
     echo
 
     if [ ! -w "$GEOIP_DIR" ]; then
-        echo >&2 "${GEOIP_DIR} is not writable!!! Check your permission!!!"
+        echo.Red >&2 "${GEOIP_DIR} is not writable!!! Check your permission!!!"
         exit 1
     fi
 
@@ -66,7 +85,7 @@
     elif command -v fetch > /dev/null 2>&1 && [ "FreeBSD" = "$(uname)" ]; then
         download_cmd='fetch -qo -'
     else
-        echo >&2 "Both \`wget\` and \`curl\` or FreeBSD\'s \`fetch\` not found!!! Need one of them to download the database!!!"
+        echo.Red >&2 "Both \`wget\` and \`curl\` or FreeBSD\'s \`fetch\` not found!!! Need one of them to download the database!!!"
         exit 1
     fi
 
@@ -93,7 +112,7 @@
         TEMP_FILE="${TEMP_DIR}/${FILENAME}"
         TARGET_FILE="${GEOIP_DIR}/${FILENAME}.dat"
 
-        echo "Downloading ${TYPE} IPv${IP_VER} database ..."
+        echo.Cyan "Downloading ${TYPE} IPv${IP_VER} database ..."
         $download_cmd "$(geoip_download_url "$TYPE" "$IP_VER" "$FILENAME")" | gunzip > "${TEMP_FILE}"
         mv "${TEMP_FILE}" "$TARGET_FILE"
         ls -alh "$TARGET_FILE"
@@ -119,7 +138,7 @@
         rm -f "$TEMP_FILE"
     }
 
-    echo "Update date: $(update_date)"
+    echo.Cyan "Update date: $(update_date)"
 
     for IP_VER in 4 6; do
         if [ "4" = "$IP_VER" ]; then
@@ -135,5 +154,5 @@
 
     cleanup
 
-    echo "Done!"
+    echo.Green "Done!"
 }
